@@ -1,6 +1,8 @@
 {
-  "name": "OpenMP_frontend",
+  "name": "open_mp_frontend",
   "version": "1.0.0",
+  "author": "Henrik Gerdes",
+  "description": "OpenMP-Frontend  ",
   "private": true,
   "scripts": {
     "dev": "nuxt",

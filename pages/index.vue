@@ -1,36 +1,42 @@
 <template>
   <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">
-        OpenMP_frontend
-      </h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
+      <div id="dropdown-search">
+        <b-dropdown text="Search for..." class="m-md-2">
+          <b-dropdown-item
+            v-for="query in querys"
+            :key="query.text">
+            {{ query.text }}
+            <b-dropdown-divider></b-dropdown-divider>
+          </b-dropdown-item>
+        </b-dropdown>
       </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 
-export default Vue.extend({})
+import Vue from 'vue'
+import { BootstrapVue, DropdownPlugin } from 'bootstrap-vue'
+Vue.use(BootstrapVue)
+Vue.use(DropdownPlugin)
+
+export default{
+
+    data() {
+      return {
+        querys: [
+          { text: 'Session' },
+          { text: 'Talks' },
+          { text: 'Docs' },
+          { text: 'Conten' },
+          { text: 'MPs' }
+        ]
+      }
+    }
+
+
+}
+
 </script>
 
 <style>
