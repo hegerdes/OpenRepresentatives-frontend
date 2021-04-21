@@ -1,42 +1,35 @@
 <template>
   <div class="container">
-      <div id="dropdown-search">
-        <b-dropdown text="Search for..." class="m-md-2">
-          <b-dropdown-item
-            v-for="query in querys"
-            :key="query.text">
-            {{ query.text }}
-            <b-dropdown-divider></b-dropdown-divider>
-          </b-dropdown-item>
-        </b-dropdown>
-      </div>
+    <div id="dropdown-search">
+      <b-dropdown text="Search for..." class="m-md-2">
+        <b-dropdown-item v-for="query in querys" :key="query.text">
+          {{ query.text }}
+          <b-dropdown-divider></b-dropdown-divider>
+        </b-dropdown-item>
+      </b-dropdown>
     </div>
+  </div>
 </template>
 
 <script lang="ts">
+import Vue from "vue";
+import { BootstrapVue, DropdownPlugin } from "bootstrap-vue";
+Vue.use(BootstrapVue);
+Vue.use(DropdownPlugin);
 
-import Vue from 'vue'
-import { BootstrapVue, DropdownPlugin } from 'bootstrap-vue'
-Vue.use(BootstrapVue)
-Vue.use(DropdownPlugin)
-
-export default{
-
-    data() {
-      return {
-        querys: [
-          { text: 'Session' },
-          { text: 'Talks' },
-          { text: 'Docs' },
-          { text: 'Conten' },
-          { text: 'MPs' }
-        ]
-      }
-    }
-
-
-}
-
+export default {
+  data() {
+    return {
+      querys: [
+        { text: "Session" },
+        { text: "Talks" },
+        { text: "Docs" },
+        { text: "Conten" },
+        { text: "MPs" },
+      ],
+    };
+  },
+};
 </script>
 
 <style>
@@ -50,16 +43,8 @@ export default{
 }
 
 .title {
-  font-family:
-    'Quicksand',
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
+  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: block;
   font-weight: 300;
   font-size: 100px;
