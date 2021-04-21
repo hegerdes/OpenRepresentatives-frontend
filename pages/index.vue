@@ -4,32 +4,32 @@
       <b-dropdown text="Search for..." class="m-md-2">
         <b-dropdown-item v-for="query in querys" :key="query.text">
           {{ query.text }}
-          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-divider />
         </b-dropdown-item>
       </b-dropdown>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import { BootstrapVue, DropdownPlugin } from "bootstrap-vue";
-Vue.use(BootstrapVue);
-Vue.use(DropdownPlugin);
+<script lang='ts'>
+import Vue from 'vue'
+import { BootstrapVue, DropdownPlugin } from 'bootstrap-vue'
+Vue.use(BootstrapVue)
+Vue.use(DropdownPlugin)
 
 export default {
-  data() {
+  data () {
     return {
       querys: [
-        { text: "Session" },
-        { text: "Talks" },
-        { text: "Docs" },
-        { text: "Conten" },
-        { text: "MPs" },
-      ],
-    };
-  },
-};
+        { text: 'Session' },
+        { text: 'Talks' },
+        { text: 'Docs' },
+        { text: 'Conten' },
+        { text: 'MPs' }
+      ]
+    }
+  }
+}
 </script>
 
 <style>
