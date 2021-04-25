@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div id="dropdown-search">
-      <b-dropdown text="Search for..." class="m-md-2">
-        <b-dropdown-item v-for="query in querys" :key="query.text">
+      <b-dropdown :text="searchMsg" class="m-md-2">
+        <b-dropdown-item v-for="query in querys" :key="query.text" @click="searchSelected(query.text)">
           {{ query.text }}
           <b-dropdown-divider />
         </b-dropdown-item>
@@ -17,19 +17,25 @@ import { BootstrapVue, DropdownPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 Vue.use(DropdownPlugin)
 
-export default {
+export default Vue.extend({
   data () {
     return {
+      searchMsg: 'Search for...',
       querys: [
-        { text: 'Session' },
+        { text: 'Sessions' },
         { text: 'Talks' },
         { text: 'Docs' },
-        { text: 'Conten' },
+        { text: 'Content' },
         { text: 'MPs' }
       ]
     }
+  },
+  methods: {
+    searchSelected (searchType: string) {
+      this.searchMsg = searchType
+    }
   }
-}
+})
 </script>
 
 <style>
