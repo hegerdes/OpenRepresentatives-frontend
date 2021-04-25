@@ -1,21 +1,30 @@
 <template>
-  <div class="container">
-    <div id="dropdown-search">
-      <b-dropdown :text="searchMsg" class="m-md-2">
-        <b-dropdown-item v-for="query in querys" :key="query.text" @click="searchSelected(query.text)">
-          {{ query.text }}
-          <b-dropdown-divider />
-        </b-dropdown-item>
-      </b-dropdown>
+  <div id="main">
+    <div id="nav-bar">
+      <NavBar
+        @update-data="refresh()"
+      />
+    </div>
+    <div class="container">
+      <div id="dropdown-search">
+        <b-dropdown :text="searchMsg" class="m-md-2">
+          <b-dropdown-item v-for="query in querys" :key="query.text" @click="searchSelected(query.text)">
+            {{ query.text }}
+            <b-dropdown-divider />
+          </b-dropdown-item>
+        </b-dropdown>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang='ts'>
 import Vue from 'vue'
-import { BootstrapVue, DropdownPlugin } from 'bootstrap-vue'
+import { BootstrapVue, DropdownPlugin, BootstrapVueIcons } from 'bootstrap-vue'
+// import navbar from '~/components/navbar.vue'
 Vue.use(BootstrapVue)
 Vue.use(DropdownPlugin)
+Vue.use(BootstrapVueIcons)
 
 export default Vue.extend({
   data () {
