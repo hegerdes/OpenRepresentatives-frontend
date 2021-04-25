@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <b-navbar toggleable="sm" type="light" variant="light">
+  <div id="nav-bar">
+    <b-navbar toggleable="sm" type="light" variant="light" sticky>
       <b-navbar-toggle target="nav-text-collapse" />
       <b-navbar-brand>OpenRepresentives</b-navbar-brand>
 
