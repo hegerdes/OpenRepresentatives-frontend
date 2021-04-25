@@ -14,6 +14,22 @@
           </b-dropdown-item>
         </b-dropdown>
       </div>
+      <div id="session-search-options">
+        <b-form-datepicker
+          id="start-datepicker"
+          v-model="startDate"
+          :date-disabled-fn="dateDisabled"
+          locale="de"
+          placeholder="Start Date"
+        />
+        <b-form-datepicker
+          id="end-datepicker"
+          v-model="endDate"
+          :date-disabled-fn="dateDisabled"
+          locale="de"
+          placeholder="End Date"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -30,6 +46,8 @@ export default Vue.extend({
   data () {
     return {
       searchMsg: 'Search for...',
+      startDate: '',
+      endDate: '',
       querys: [
         { text: 'Sessions' },
         { text: 'Talks' },
@@ -40,6 +58,14 @@ export default Vue.extend({
     }
   },
   methods: {
+    dateDisabled (_ymd: String, date: Date) {
+      // Disable weekends (Sunday = `0`, Saturday = `6`) and
+      // disable days that fall on the 13th of the month
+      const weekday = date.getDay()
+      const day = date.getDate()
+      // Return `true` if the date should be disabled
+      return weekday === 0 || weekday === 6 || day === 13
+    },
     searchSelected (searchType: string) {
       this.searchMsg = searchType
     }
