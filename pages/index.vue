@@ -7,7 +7,7 @@
     </div>
     <div class="container">
       <div id="dropdown-search">
-        <b-dropdown :text="searchMsg" class="m-md-2">
+        <b-dropdown :text="searchMsg" class="mb-2 mr-sm-4 mb-sm-0">
           <b-dropdown-item v-for="query in querys" :key="query.text" @click="searchSelected(query.text)">
             {{ query.text }}
             <b-dropdown-divider />
@@ -15,20 +15,43 @@
         </b-dropdown>
       </div>
       <div id="session-search-options">
-        <b-form-datepicker
-          id="start-datepicker"
-          v-model="startDate"
-          :date-disabled-fn="dateDisabled"
-          locale="de"
-          placeholder="Start Date"
-        />
-        <b-form-datepicker
-          id="end-datepicker"
-          v-model="endDate"
-          :date-disabled-fn="dateDisabled"
-          locale="de"
-          placeholder="End Date"
-        />
+        <b-form inline @submit.stop.prevent>
+          <label class="sr-only" for="inline-form-input-start-date">Start Date</label>
+          <b-form-datepicker
+            id="start-datepicker"
+            v-model="startDate"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            :date-disabled-fn="dateDisabled"
+            locale="de"
+            placeholder="Start Date"
+          />
+          <label class="sr-only" for="inline-form-input-end-date">End Date</label>
+          <b-form-datepicker
+            id="end-datepicker"
+            v-model="endDate"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            :date-disabled-fn="dateDisabled"
+            locale="de"
+            placeholder="End Date"
+          />
+          <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
+            Or
+          </b-form-text>
+          <label class="sr-only" for="inline-form-input-session">SessionSearch</label>
+          <b-form-input
+            id="session-search-in"
+            v-model="sessionIndices"
+            name="session-imput-1"
+            :state="sessionState('name')"
+            aria-describedby="input-live-feedback"
+            placeholder="SessionIDs"
+            trim
+          />
+          <!-- This will only be shown if the preceding input has an invalid state -->
+          <b-form-invalid-feedback id="input-live-feedback" class="mb-2 mr-sm-2 mb-sm-0">
+            Enter at least 3 letters
+          </b-form-invalid-feedback>
+        </b-form>
       </div>
     </div>
   </div>
@@ -48,6 +71,7 @@ export default Vue.extend({
       searchMsg: 'Search for...',
       startDate: '',
       endDate: '',
+      sessionIndices: '',
       querys: [
         { text: 'Sessions' },
         { text: 'Talks' },
@@ -57,7 +81,15 @@ export default Vue.extend({
       ]
     }
   },
+  computed: {
+    sessionStateOld () {
+      return false
+    }
+  },
   methods: {
+    sessionState (_session: String) {
+      return true
+    },
     dateDisabled (_ymd: String, date: Date) {
       // Disable weekends (Sunday = `0`, Saturday = `6`) and
       // disable days that fall on the 13th of the month
