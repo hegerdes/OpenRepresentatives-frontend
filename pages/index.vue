@@ -7,15 +7,15 @@
     </div>
     <div class="container">
       <div id="dropdown-search">
-        <b-dropdown :text="searchMsg" class="mb-2 mr-sm-4 mb-sm-0">
-          <b-dropdown-item v-for="query in querys" :key="query.text" @click="searchSelected(query.text)">
+        <b-dropdown :text="searchType.text" class="mb-2 mr-sm-4 mb-sm-0">
+          <b-dropdown-item v-for="query in querys" :key="query.text" @click="searchSelected(query)">
             {{ query.text }}
             <b-dropdown-divider />
           </b-dropdown-item>
         </b-dropdown>
       </div>
       <div id="session-search-options">
-        <b-form inline @submit.stop.prevent>
+        <b-form v-if="searchType.id === 1" inline @submit.stop.prevent>
           <label class="sr-only" for="inline-form-input-start-date">Start Date</label>
           <b-form-datepicker
             id="start-datepicker"
@@ -48,7 +48,7 @@
             trim
           />
           <!-- This will only be shown if the preceding input has an invalid state -->
-          <b-form-invalid-feedback id="input-live-feedback" class="mb-2 mr-sm-2 mb-sm-0">
+          <b-form-invalid-feedback id="input-live-feedback">
             Enter at least 3 letters
           </b-form-invalid-feedback>
         </b-form>
@@ -60,24 +60,28 @@
 <script lang='ts'>
 import Vue from 'vue'
 import { BootstrapVue, DropdownPlugin, BootstrapVueIcons } from 'bootstrap-vue'
-// import navbar from '~/components/navbar.vue'
 Vue.use(BootstrapVue)
 Vue.use(DropdownPlugin)
 Vue.use(BootstrapVueIcons)
 
+interface SearchOptions {
+  id: number;
+  text: string;
+}
+
 export default Vue.extend({
   data () {
     return {
-      searchMsg: 'Search for...',
       startDate: '',
       endDate: '',
       sessionIndices: '',
+      searchType: { id: 0, text: 'Search for...' },
       querys: [
-        { text: 'Sessions' },
-        { text: 'Talks' },
-        { text: 'Docs' },
-        { text: 'Content' },
-        { text: 'MPs' }
+        { id: 1, text: 'Sessions' },
+        { id: 2, text: 'Talks' },
+        { id: 3, text: 'Docs' },
+        { id: 4, text: 'Content' },
+        { id: 5, text: 'MPs' }
       ]
     }
   },
@@ -88,7 +92,7 @@ export default Vue.extend({
   },
   methods: {
     sessionState (_session: String) {
-      return true
+      return null
     },
     dateDisabled (_ymd: String, date: Date) {
       // Disable weekends (Sunday = `0`, Saturday = `6`) and
@@ -98,8 +102,8 @@ export default Vue.extend({
       // Return `true` if the date should be disabled
       return weekday === 0 || weekday === 6 || day === 13
     },
-    searchSelected (searchType: string) {
-      this.searchMsg = searchType
+    searchSelected (searchType: SearchOptions) {
+      this.searchType = searchType
     }
   }
 })
