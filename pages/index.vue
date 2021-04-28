@@ -52,6 +52,50 @@
             Enter at least 3 letters
           </b-form-invalid-feedback>
         </b-form>
+        <b-form v-if="searchType.id === 2" inline @submit.stop.prevent>
+          <label class="sr-only" for="inline-form-input-start-date">Start Date</label>
+          <b-form-datepicker
+            id="session-datepicker"
+            v-model="startDate"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            :date-disabled-fn="dateDisabled"
+            locale="de"
+            placeholder="Date"
+          />
+          <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
+            Or
+          </b-form-text>
+          <label class="sr-only" for="inline-form-input-session">SessionSearch</label>
+          <b-form-input
+            id="session-search-in"
+            v-model="sessionIndices"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            name="session-imput-1"
+            :state="sessionState('name')"
+            aria-describedby="input-live-feedback"
+            placeholder="SessionID"
+            trim
+          />
+          <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
+            Or
+          </b-form-text>
+          <label class="sr-only" for="inline-form-input-session">SessionSearch</label>
+          <b-form-input
+            id="mp-search-in"
+            v-model="mpName"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            name="mp-imput-1"
+            :state="mpState('name')"
+            aria-describedby="input-live-feedback"
+            placeholder="MP name or ID"
+            trim
+          />
+
+          <!-- This will only be shown if the preceding input has an invalid state -->
+          <b-form-invalid-feedback id="input-live-feedback">
+            Enter at least 3 letters
+          </b-form-invalid-feedback>
+        </b-form>
       </div>
     </div>
   </div>
@@ -75,6 +119,7 @@ export default Vue.extend({
       startDate: '',
       endDate: '',
       sessionIndices: '',
+      mpName: '',
       searchType: { id: 0, text: 'Search for...' },
       querys: [
         { id: 1, text: 'Sessions' },
@@ -92,6 +137,9 @@ export default Vue.extend({
   },
   methods: {
     sessionState (_session: String) {
+      return null
+    },
+    mpState (_session: String) {
       return null
     },
     dateDisabled (_ymd: String, date: Date) {
