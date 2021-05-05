@@ -7,7 +7,7 @@ export default {
   head: {
     title: 'OpenMP_frontend',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'de'
     },
     meta: [
       { charset: 'utf-8' },

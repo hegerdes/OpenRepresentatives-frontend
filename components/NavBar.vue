@@ -1,5 +1,5 @@
 <template>
-  <div id="nav-bar">
+  <div id="nav-bar-elem">
     <b-navbar toggleable="sm" type="light" variant="light" sticky>
       <b-navbar-toggle target="nav-text-collapse" />
       <b-navbar-brand>OpenRepresentives</b-navbar-brand>

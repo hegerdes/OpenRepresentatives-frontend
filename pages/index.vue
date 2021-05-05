@@ -26,6 +26,7 @@
                 name="session-start-date-input"
                 class="mb-2 mr-sm-2 mb-sm-0"
                 :state="validateState('formSession', 'startDate')"
+                :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short' }"
                 :date-disabled-fn="dateDisabled"
                 locale="de"
                 aria-describedby="input-start-date-live-feedback"
@@ -43,6 +44,7 @@
                 name="session-end-date-input"
                 class="mb-2 mr-sm-2 mb-sm-0"
                 :state="validateState('formSession', 'endDate')"
+                :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short' }"
                 :date-disabled-fn="dateDisabled"
                 locale="de"
                 aria-describedby="input-start-date-live-feedback"
@@ -82,6 +84,7 @@
                 name="talk-date-input"
                 class="mb-2 mr-sm-2 mb-sm-0"
                 :date-disabled-fn="dateDisabled"
+                :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short' }"
                 locale="de"
                 aria-describedby="input-date-live-feedback"
                 placeholder="Date"
@@ -128,6 +131,83 @@
                 Enter at least 3 letters
               </b-form-invalid-feedback>
             </b-form-group>
+            <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
+              Or
+            </b-form-text>
+            <!-- Topic -->
+            <b-form-group id="talk-topic-form" label-for="talk-topic-in">
+              <b-form-input
+                id="talk-topic-in"
+                v-model.trim="$v.formTalk.topic.$model"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                name="talk-topic-in"
+                :state="validateState('formTalk', 'topic')"
+                aria-describedby="input-live-feedback"
+                placeholder="Topic"
+                trim
+              />
+              <b-form-invalid-feedback id="input-live-feedback">
+                Enter at least 3 letters
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </b-form>
+          <!-- Doc search -->
+          <b-form v-if="searchType.id === 3" inline @submit.stop.prevent>
+            <!-- DocName -->
+            <b-form-group id="doc-name-form" label-for="doc-name-in">
+              <b-form-input
+                id="doc-name-in"
+                v-model.trim="$v.formDocs.docName.$model"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                name="doc-name-in"
+                :state="validateState('formDocs', 'docName')"
+                aria-describedby="input-live-feedback"
+                placeholder="DocName"
+                trim
+              />
+              <b-form-invalid-feedback id="input-live-feedback">
+                Enter at least 3 letters
+              </b-form-invalid-feedback>
+            </b-form-group>
+            <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
+              Or
+            </b-form-text>
+            <!-- Session -->
+            <b-form-group id="doc-session-form" label-for="doc-session-in">
+              <b-form-input
+                id="doc-session-in"
+                v-model.trim="$v.formDocs.sessionIndices.$model"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                name="doc-session-in"
+                :state="validateState('formDocs', 'sessionIndices')"
+                aria-describedby="input-live-feedback"
+                placeholder="SessionID"
+                trim
+              />
+              <b-form-invalid-feedback id="input-live-feedback">
+                Enter at least 3 letters
+              </b-form-invalid-feedback>
+            </b-form-group>
+            <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
+              Or
+            </b-form-text>
+            <!-- Date -->
+            <b-form-group id="doc-date-picker" label-for="doc-date-input">
+              <b-form-datepicker
+                id="doc-date-input"
+                v-model="$v.formDocs.date.$model"
+                name="doc-date-input"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                :date-disabled-fn="dateDisabled"
+                :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short' }"
+                locale="de"
+                aria-describedby="input-date-live-feedback"
+                placeholder="Date"
+              />
+              <b-form-invalid-feedback id="input-date-live-feedback">
+                There are no sessions on this date
+              </b-form-invalid-feedback>
+            </b-form-group>
           </b-form>
         </b-col>
       </b-form-row>
@@ -170,7 +250,13 @@ export default Vue.extend({
       formTalk: {
         date: null,
         sessionIndices: null,
-        mpName: null
+        mpName: null,
+        topic: null
+      },
+      formDocs: {
+        date: null,
+        sessionIndices: null,
+        docName: null
       }
     }
   },
@@ -195,14 +281,24 @@ export default Vue.extend({
       },
       mpName: {
         minLength: minLength(4)
+      },
+      topic: {
+        minLength: minLength(4)
+      }
+    },
+    formDocs: {
+      sessionIndices: {
+        minLength: minLength(4)
+      },
+      docName: {
+        minLength: minLength(4)
+      },
+      date: {
+        required
       }
     }
   },
-  computed: {
-    sessionStateOld () {
-      return false
-    }
-  },
+  computed: {},
   methods: {
     validateState (form: string, index: string) {
       let prop: any
@@ -210,17 +306,15 @@ export default Vue.extend({
         prop = this.$v.formSession[index]
       } else if (form === 'formTalk') {
         prop = this.$v.formTalk[index]
+      } else if (form === 'formDocs') {
+        prop = this.$v.formDocs[index]
+      } else {
+        return null
       }
       const { $dirty, $error } = prop
       return $dirty ? !$error : null
     },
     resetForm () {
-      this.formSession = {
-        startDate: null,
-        endDate: null,
-        sessionIndices: null
-      }
-
       this.$nextTick(() => {
         this.$v.$reset()
       })
