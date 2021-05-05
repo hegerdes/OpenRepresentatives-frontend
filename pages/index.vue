@@ -6,7 +6,7 @@
       />
     </div>
     <b-container fluid>
-      <b-form-row align="left" class="top-buffer">
+      <b-form-row align-v="stretch" align="left" class="top-buffer h-100">
         <b-col id="dropdown-search" sm="2">
           <b-dropdown :text="searchType.text" class="mb-2 mr-sm-4 mb-sm-0">
             <b-dropdown-item v-for="query in querys" :key="query.id" @click="searchSelected(query)">
@@ -16,86 +16,118 @@
           </b-dropdown>
         </b-col>
         <b-col id="session-search-options" sm="10">
-          <b-form v-if="searchType.id === 1" inline @submit.stop.prevent>
-            <label class="sr-only" for="inline-form-input-start-date">Start Date</label>
-            <b-form-datepicker
-              id="start-datepicker"
-              v-model="startDate"
-              class="mb-2 mr-sm-2 mb-sm-0"
-              :date-disabled-fn="dateDisabled"
-              locale="de"
-              placeholder="Start Date"
-            />
-            <label class="sr-only" for="inline-form-input-end-date">End Date</label>
-            <b-form-datepicker
-              id="end-datepicker"
-              v-model="endDate"
-              class="mb-2 mr-sm-2 mb-sm-0"
-              :date-disabled-fn="dateDisabled"
-              locale="de"
-              placeholder="End Date"
-            />
+          <!-- Session Search -->
+          <b-form v-if="searchType.id === 1" inline @submit.stop.prevent="onSubmit">
+            <b-form-group id="session-date-picker-1" label-for="session-start-date-input">
+              <!-- Start date -->
+              <b-form-datepicker
+                id="session-start-date-input"
+                v-model="$v.formSession.startDate.$model"
+                name="session-start-date-input"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                :state="validateState('formSession', 'startDate')"
+                :date-disabled-fn="dateDisabled"
+                locale="de"
+                aria-describedby="input-start-date-live-feedback"
+                placeholder="Start Date"
+              />
+              <b-form-invalid-feedback id="input-start-date-live-feedback">
+                There are no sessions on this date
+              </b-form-invalid-feedback>
+            </b-form-group>
+            <b-form-group id="session-date-picker-2" label-for="session-end-date-input">
+              <!-- End date -->
+              <b-form-datepicker
+                id="session-end-date-input"
+                v-model="$v.formSession.endDate.$model"
+                name="session-end-date-input"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                :state="validateState('formSession', 'endDate')"
+                :date-disabled-fn="dateDisabled"
+                locale="de"
+                aria-describedby="input-start-date-live-feedback"
+                placeholder="End Date"
+              />
+              <b-form-invalid-feedback id="input-start-date-live-feedback">
+                There are no sessions on this date
+              </b-form-invalid-feedback>
+            </b-form-group>
             <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
               Or
             </b-form-text>
-            <label class="sr-only" for="inline-form-input-session">SessionSearch</label>
-            <b-form-input
-              id="session-search-in"
-              v-model="sessionIndices"
-              name="session-imput-1"
-              :state="sessionState('name')"
-              aria-describedby="input-live-feedback"
-              placeholder="SessionIDs"
-              trim
-            />
-            <!-- This will only be shown if the preceding input has an invalid state -->
-            <b-form-invalid-feedback id="input-live-feedback">
-              Enter at least 3 letters
-            </b-form-invalid-feedback>
+            <!-- Sessin ID search -->
+            <b-form-group id="session-id-search" label-for="session-search-id-in">
+              <b-form-input
+                id="session-search-id-in"
+                v-model.trim="$v.formSession.sessionIndices.$model"
+                name="session-search-id-in"
+                :state="validateState('formSession', 'sessionIndices')"
+                aria-describedby="input-live-feedback"
+                placeholder="SessionIDs"
+                trim
+              />
+              <b-form-invalid-feedback id="input-live-feedback" aria-live="polite" class="inline">
+                Enter at least 3 letters
+              </b-form-invalid-feedback>
+            </b-form-group>
           </b-form>
-          <b-form v-if="searchType.id === 2" inline @submit.stop.prevent>
-            <label class="sr-only" for="inline-form-input-start-date">Start Date</label>
-            <b-form-datepicker
-              id="session-datepicker"
-              v-model="startDate"
-              class="mb-2 mr-sm-2 mb-sm-0"
-              :date-disabled-fn="dateDisabled"
-              locale="de"
-              placeholder="Date"
-            />
-            <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
-              Or
-            </b-form-text>
-            <label class="sr-only" for="inline-form-input-session">SessionSearch</label>
-            <b-form-input
-              id="session-search-in"
-              v-model="sessionIndices"
-              class="mb-2 mr-sm-2 mb-sm-0"
-              name="session-imput-1"
-              :state="sessionState('name')"
-              aria-describedby="input-live-feedback"
-              placeholder="SessionID"
-              trim
-            />
-            <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
-              Or
-            </b-form-text>
-            <label class="sr-only" for="inline-form-input-session">SessionSearch</label>
-            <b-form-input
-              id="mp-search-in"
-              v-model="mpName"
-              class="mb-2 mr-sm-2 mb-sm-0"
-              name="mp-imput-1"
-              :state="mpState('name')"
-              aria-describedby="input-live-feedback"
-              placeholder="MP name or ID"
-              trim
-            />
 
-            <!-- This will only be shown if the preceding input has an invalid state -->
-            <b-form-invalid-feedback id="input-live-feedback">
-              Enter at least 3 letters
-            </b-form-invalid-feedback>
+          <!-- Talk search -->
+          <b-form v-if="searchType.id === 2" inline @submit.stop.prevent>
+            <!-- Date -->
+            <b-form-group id="talk-date-picker" label-for="talk-date-input">
+              <b-form-datepicker
+                id="talk-date-input"
+                v-model="$v.formTalk.date.$model"
+                name="talk-date-input"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                :date-disabled-fn="dateDisabled"
+                locale="de"
+                aria-describedby="input-date-live-feedback"
+                placeholder="Date"
+              />
+              <b-form-invalid-feedback id="input-date-live-feedback">
+                There are no sessions on this date
+              </b-form-invalid-feedback>
+            </b-form-group>
+            <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
+              Or
+            </b-form-text>
+            <!-- Session -->
+            <b-form-group id="talk-session-form" label-for="talk-session-in">
+              <b-form-input
+                id="talk-session-in"
+                v-model.trim="$v.formTalk.sessionIndices.$model"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                name="talk-session-in"
+                :state="validateState('formTalk', 'sessionIndices')"
+                aria-describedby="input-live-feedback"
+                placeholder="SessionID"
+                trim
+              />
+              <b-form-invalid-feedback id="input-live-feedback">
+                Enter at least 3 letters
+              </b-form-invalid-feedback>
+            </b-form-group>
+            <b-form-text id="input-session-info" class="mb-2 mr-sm-2 mb-sm-0">
+              Or
+            </b-form-text>
+            <!-- MPs -->
+            <b-form-group id="talk-mp-form" label-for="talk-mp-in">
+              <b-form-input
+                id="talk-mp-in"
+                v-model.trim="$v.formTalk.mpName.$model"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                name="talk-mp-in"
+                :state="validateState('formTalk', 'mpName')"
+                aria-describedby="input-live-feedback"
+                placeholder="MP name or ID"
+                trim
+              />
+              <b-form-invalid-feedback id="input-live-feedback">
+                Enter at least 3 letters
+              </b-form-invalid-feedback>
+            </b-form-group>
           </b-form>
         </b-col>
       </b-form-row>
@@ -106,6 +138,9 @@
 <script lang='ts'>
 import Vue from 'vue'
 import { BootstrapVue, DropdownPlugin, BootstrapVueIcons } from 'bootstrap-vue'
+import { validationMixin } from 'vuelidate'
+import { required, minLength } from 'vuelidate/lib/validators'
+
 Vue.use(BootstrapVue)
 Vue.use(DropdownPlugin)
 Vue.use(BootstrapVueIcons)
@@ -116,12 +151,9 @@ interface SearchOptions {
 }
 
 export default Vue.extend({
+  mixins: [validationMixin],
   data () {
     return {
-      startDate: '',
-      endDate: '',
-      sessionIndices: '',
-      mpName: '',
       searchType: { id: 0, text: 'Search for...' },
       querys: [
         { id: 1, text: 'Sessions' },
@@ -129,7 +161,41 @@ export default Vue.extend({
         { id: 3, text: 'Docs' },
         { id: 4, text: 'Content' },
         { id: 5, text: 'MPs' }
-      ]
+      ],
+      formSession: {
+        startDate: null,
+        endDate: null,
+        sessionIndices: null
+      },
+      formTalk: {
+        date: null,
+        sessionIndices: null,
+        mpName: null
+      }
+    }
+  },
+  validations: {
+    formSession: {
+      startDate: {
+        required
+      },
+      endDate: {
+        required
+      },
+      sessionIndices: {
+        minLength: minLength(4)
+      }
+    },
+    formTalk: {
+      date: {
+        required
+      },
+      sessionIndices: {
+        minLength: minLength(4)
+      },
+      mpName: {
+        minLength: minLength(4)
+      }
     }
   },
   computed: {
@@ -138,11 +204,34 @@ export default Vue.extend({
     }
   },
   methods: {
-    sessionState (_session: String) {
-      return null
+    validateState (form: string, index: string) {
+      let prop: any
+      if (form === 'formSession') {
+        prop = this.$v.formSession[index]
+      } else if (form === 'formTalk') {
+        prop = this.$v.formTalk[index]
+      }
+      const { $dirty, $error } = prop
+      return $dirty ? !$error : null
     },
-    mpState (_session: String) {
-      return null
+    resetForm () {
+      this.formSession = {
+        startDate: null,
+        endDate: null,
+        sessionIndices: null
+      }
+
+      this.$nextTick(() => {
+        this.$v.$reset()
+      })
+    },
+    onSubmit () {
+      this.$v.form.$touch()
+      if (this.$v.form.$anyError) {
+        return
+      }
+
+      alert('Form submitted!')
     },
     dateDisabled (_ymd: String, date: Date) {
       // Disable weekends (Sunday = `0`, Saturday = `6`) and
