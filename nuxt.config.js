@@ -10,11 +10,13 @@ export default {
       lang: 'de'
     },
     meta: [
+      // { name: 'Content-Type', content: 'application/json' },
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
+      // { rel: 'manifest', href: '/site.webmanifest' },
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' }
     ]
   },

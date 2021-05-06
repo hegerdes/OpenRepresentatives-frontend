@@ -9,15 +9,17 @@
       <b-form-row align-v="stretch" align="left" class="top-buffer h-100">
         <b-col id="dropdown-search" sm="2">
           <b-dropdown :text="searchType.text" class="mb-2 mr-sm-4 mb-sm-0">
-            <b-dropdown-item v-for="query in querys" :key="query.id" @click="searchSelected(query)">
-              {{ query.text }}
-              <b-dropdown-divider />
+            <b-dropdown-item v-for="query in querys" :key="query.id" @click="searchSelected(query) ">
+              <div v-if="query.id > 0">
+                {{ query.text }}
+                <b-dropdown-divider />
+              </div>
             </b-dropdown-item>
           </b-dropdown>
         </b-col>
         <b-col id="session-search-options" sm="10">
           <!-- Session Search -->
-          <b-form v-if="searchType.id === 1" inline @submit.stop.prevent="onSubmit">
+          <b-form v-if="searchType.id === 1" inline @submit.stop.prevent="onSubmit(searchType.id)">
             <b-form-group id="session-date-picker-1" label-for="session-start-date-input">
               <!-- Start date -->
               <b-form-datepicker
@@ -62,6 +64,7 @@
               <b-form-input
                 id="session-search-id-in"
                 v-model.trim="$v.formSession.sessionIndices.$model"
+                class="mb-2 mr-sm-2 mb-sm-0"
                 name="session-search-id-in"
                 :state="validateState('formSession', 'sessionIndices')"
                 aria-describedby="input-live-feedback"
@@ -72,10 +75,14 @@
                 Enter at least 3 letters
               </b-form-invalid-feedback>
             </b-form-group>
+
+            <b-button type="submit" variant="primary">
+              Submit
+            </b-button>
           </b-form>
 
           <!-- Talk search -->
-          <b-form v-if="searchType.id === 2" inline @submit.stop.prevent>
+          <b-form v-if="searchType.id === 2" inline @submit.stop.prevent="onSubmit(searchType.id)">
             <!-- Date -->
             <b-form-group id="talk-date-picker" label-for="talk-date-input">
               <b-form-datepicker
@@ -211,6 +218,16 @@
           </b-form>
         </b-col>
       </b-form-row>
+      <b-row class="container">
+        <b-button variant="primary" @click="getX">
+          GraphQLTest
+        </b-button>
+      </b-row>
+      <b-row class="container">
+        <b-card>
+          {{ queryRes }}
+        </b-card>
+      </b-row>
     </b-container>
   </div>
 </template>
@@ -220,7 +237,11 @@ import Vue from 'vue'
 import { BootstrapVue, DropdownPlugin, BootstrapVueIcons } from 'bootstrap-vue'
 import { validationMixin } from 'vuelidate'
 import { required, minLength } from 'vuelidate/lib/validators'
+import VueApollo from 'vue-apollo'
+import ApolloClient, { ApolloQueryResult, NetworkStatus } from 'apollo-boost'
+import { gql } from 'graphql-tag'
 
+Vue.use(VueApollo)
 Vue.use(BootstrapVue)
 Vue.use(DropdownPlugin)
 Vue.use(BootstrapVueIcons)
@@ -230,12 +251,31 @@ interface SearchOptions {
   text: string;
 }
 
+const apolloProvider = new VueApollo({
+  defaultClient: new ApolloClient({
+    uri: 'https://open-representatives.herokuapp.com/graphql'
+  }),
+  errorHandler (error) {
+    console.log('GraphQL err:', error)
+  }
+})
+
+const tmpres: ApolloQueryResult<any> = {
+  data: null,
+  loading: false,
+  stale: false,
+  networkStatus: NetworkStatus.ready
+}
+
 export default Vue.extend({
   mixins: [validationMixin],
+  apolloProvider,
   data () {
     return {
+      queryRes: tmpres,
       searchType: { id: 0, text: 'Search for...' },
       querys: [
+        { id: 0, text: 'Search for...' },
         { id: 1, text: 'Sessions' },
         { id: 2, text: 'Talks' },
         { id: 3, text: 'Docs' },
@@ -262,44 +302,38 @@ export default Vue.extend({
   },
   validations: {
     formSession: {
-      startDate: {
-        required
-      },
-      endDate: {
-        required
-      },
-      sessionIndices: {
-        minLength: minLength(4)
-      }
+      startDate: { required },
+      endDate: { required },
+      sessionIndices: { minLength: minLength(4) }
     },
     formTalk: {
-      date: {
-        required
-      },
-      sessionIndices: {
-        minLength: minLength(4)
-      },
-      mpName: {
-        minLength: minLength(4)
-      },
-      topic: {
-        minLength: minLength(4)
-      }
+      date: { required },
+      sessionIndices: { minLength: minLength(4) },
+      mpName: { minLength: minLength(4) },
+      topic: { minLength: minLength(4) }
     },
     formDocs: {
-      sessionIndices: {
-        minLength: minLength(4)
-      },
-      docName: {
-        minLength: minLength(4)
-      },
-      date: {
-        required
-      }
+      sessionIndices: { minLength: minLength(4) },
+      docName: { minLength: minLength(4) },
+      date: { required }
     }
   },
   computed: {},
   methods: {
+    async getX () {
+      const res = await this.$apollo.query({
+        query: gql`query {
+          getMPs(party:"spd"){
+            f_name
+            s_name
+            mp_id
+            role
+            party
+          }
+        }`
+      })
+      this.queryRes = res
+    },
     validateState (form: string, index: string) {
       let prop: any
       if (form === 'formSession') {
@@ -319,21 +353,18 @@ export default Vue.extend({
         this.$v.$reset()
       })
     },
-    onSubmit () {
-      this.$v.form.$touch()
-      if (this.$v.form.$anyError) {
+    onSubmit (_fromType: Number) {
+      this.$v.formSession.$touch()
+      if (this.$v.formSession.$anyError) {
         return
       }
-
-      alert('Form submitted!')
+      console.log(this.formSession)
     },
     dateDisabled (_ymd: String, date: Date) {
       // Disable weekends (Sunday = `0`, Saturday = `6`) and
-      // disable days that fall on the 13th of the month
       const weekday = date.getDay()
-      const day = date.getDate()
       // Return `true` if the date should be disabled
-      return weekday === 0 || weekday === 6 || day === 13
+      return weekday === 0 || weekday === 6
     },
     searchSelected (searchType: SearchOptions) {
       this.searchType = searchType
@@ -345,7 +376,7 @@ export default Vue.extend({
 <style>
 .container {
   margin: 0 auto;
-  min-height: 100vh;
+  min-height: 10vh;
   display: flex;
   justify-content: center;
   align-items: center;
