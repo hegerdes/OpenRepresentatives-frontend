@@ -321,7 +321,7 @@ export default Vue.extend({
   computed: {},
   methods: {
     async getX () {
-      const res = await this.$apollo.query({
+      await this.$apollo.query({
         query: gql`query {
           getMPs(party:"spd"){
             f_name
@@ -331,8 +331,16 @@ export default Vue.extend({
             party
           }
         }`
+      }).then((res) => {
+        this.queryRes = res
+      }).catch((error) => {
+        this.queryRes = {
+          data: error,
+          loading: false,
+          stale: false,
+          networkStatus: NetworkStatus.ready
+        }
       })
-      this.queryRes = res
     },
     validateState (form: string, index: string) {
       let prop: any
