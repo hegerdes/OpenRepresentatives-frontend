@@ -228,22 +228,9 @@ export default Vue.extend({
   },
   data () {
     return {
-      formSession: {
-        startDate: null,
-        endDate: null,
-        sessionIndices: null
-      },
-      formTalk: {
-        date: null,
-        sessionIndices: null,
-        mpName: null,
-        topic: null
-      },
-      formDocs: {
-        date: null,
-        sessionIndices: null,
-        docName: null
-      }
+      formSession: {tartDate: null, endDate: null, sessionIndices: null },
+      formTalk: {date: null, sessionIndices: null, mpName: null, topic: null },
+      formDocs: {date: null, sessionIndices: null, docName: null }
     }
   },
   methods: {
