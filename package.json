@@ -30,7 +30,7 @@
     "@nuxtjs/eslint-module": "^3.0.2",
     "@types/vuelidate": "^0.7.14",
     "@babel/eslint-parser": "^7.14.3",
-    "eslint": "^7.26.0",
+    "eslint": "^7.27.0",
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-vue": "^7.7.0"
   }
